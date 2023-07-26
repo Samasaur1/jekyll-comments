@@ -3,7 +3,9 @@ use std::fmt::format;
 use axum::{routing::{get, post}, http::StatusCode, response::IntoResponse, Json, Router, Form};
 use serde::{Deserialize, Serialize};
 use std::net::SocketAddr;
+use std::num::ParseIntError;
 use std::process::exit;
+use std::str::FromStr;
 use axum::handler::Handler;
 use axum::response::Redirect;
 use octocrab::models::repos::{CommitAuthor, Object};
@@ -41,9 +43,25 @@ async fn main() {
     let app = Router::new()
         .route("/", post(|x| create_comment(x, crab)));
 
+    let port = match std::env::var("JKC_PORT") {
+        Ok(p) => {
+            match u16::from_str(p.as_str()) {
+                Ok(port) => port,
+                Err(_) => {
+                    eprintln!("Cannot convert value of $JKC_PORT ({p}) to u16");
+                    exit(1);
+                }
+            }
+        }
+        Err(_) => {
+            println!("No value for $JKC_PORT; using 10113");
+            10113u16;
+        }
+    };
+
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], port));
     // tracing::debug!("listening on {}", addr);
     println!("listening on {}", addr);
     axum::Server::bind(&addr)
