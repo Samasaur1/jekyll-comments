@@ -55,7 +55,7 @@ async fn main() {
         }
         Err(_) => {
             println!("No value for $JKC_PORT; using 10113");
-            10113u16;
+            10113u16
         }
     };
 
