@@ -9,7 +9,7 @@ in rustPlatform.buildRustPackage rec {
 
   src = ./.;
 
-  cargoHash = "sha256-VlEamDg5c1Hc03z5/7YWekY23ufkWCgyeOfAOtYjuFY=";
+  cargoHash = "sha256-4efHYBR4SEayjEHvXpRX055M7nDwwq8li07mIpbMl+4=";
 
   buildInputs = [ ] ++ lib.optionals stdenv.isDarwin [
     darwin.apple_sdk.frameworks.IOKit
