@@ -1,22 +1,23 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-{
-  options = {
-    services.jekyll-comments = {
-      enable = mkEnableOption "jekyll-comments";
-      port = mkOption {
-        type = types.port;
-        default = 10113;
-        example = 46264;
-        description = "The port to listen on";
-      };
-      openFirewall = mkOption {
-        type = types.bool;
-        default = true;
-        example = false;
-        description = "Whether to automatically open the port the server runs on";
-      };
+
+let cfg = config.services.jekyll-comments;
+
+in {
+  options.services.jekyll-comments = {
+    enable = mkEnableOption "jekyll-comments";
+    port = mkOption {
+      type = types.port;
+      default = 10113;
+      example = 46264;
+      description = "The port to listen on";
+    };
+    openFirewall = mkOption {
+      type = types.bool;
+      default = true;
+      example = false;
+      description = "Whether to automatically open the port the server runs on";
     };
   };
 
@@ -24,9 +25,10 @@ with lib;
     systemd.services.jekyll-comments = {
       description = "Jekyll Comments Server";
 
-      script = ''
+      # TODO: should have package option or put it in pkgs or something idr too sleepy
+      script = let package = pkgs.callPackage ./. {}; in ''
         cd $STATE_DIRECTORY
-        ${inputs.jekyll-comments.packages.${pkgs.system}.default}/bin/jekyll-comments --port ${cfg.port}
+        ${package}/bin/jekyll-comments --port ${toString cfg.port}
       '';
 
       serviceConfig = {
