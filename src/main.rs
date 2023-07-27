@@ -11,6 +11,7 @@ use axum::response::Redirect;
 use octocrab::models::repos::{CommitAuthor, Object};
 use octocrab::Octocrab;
 use octocrab::params::repos::Reference;
+use regex::Regex;
 use time::macros::{format_description, offset};
 use time::{format_description, OffsetDateTime, UtcOffset};
 use time::format_description::well_known;
@@ -73,7 +74,9 @@ async fn main() {
 async fn create_comment(Form(payload): Form<Comment>, crab: Octocrab) -> Redirect {
     println!("received comment {:?}", payload);
     let uuid = Uuid::new_v4();
-    let post_id = payload.post_id;
+    let invalid_post_id_chars = Regex::new(r"[^a-zA-Z0-9-]").unwrap();
+    let post_id = invalid_post_id_chars.replace_all(payload.post_id.as_str(), "");
+    // At the moment I am not checking to see if the passed post_id is a valid post, just whether it is safe.
     println!("uuid: {uuid}");
     println!("post: {post_id}");
     let branch_name = format!("comment/{post_id}/{uuid}");
@@ -87,12 +90,14 @@ async fn create_comment(Form(payload): Form<Comment>, crab: Octocrab) -> Redirec
     repos.create_ref(&Reference::Branch(branch_name.clone()), sha).await.unwrap();
     let mut file_contents = format!("\
 id: {uuid}
-name: {}
-email: {}
+name: |-
+  {}
+email: |-
+  {}
 gravatar: {:x}
-", &payload.name, &payload.email, md5::compute(&payload.email));
+", &payload.name.replace("\n", " "), &payload.email.replace("\n", " "), md5::compute(&payload.email));
     if let Some(url) = payload.website {
-        file_contents.push_str(format!("url: {url}\n").as_str());
+        file_contents.push_str(format!("url: |-\n  {}\n", url.replace("\n", " ")).as_str());
     }
     let now = OffsetDateTime::now_utc();
     file_contents.push_str(format!("date: {}\n", now.format(&well_known::Iso8601::DEFAULT).unwrap()).as_str());
@@ -108,6 +113,7 @@ gravatar: {:x}
             file_contents)
         .branch(&branch_name)
         .author(CommitAuthor {
+            //TODO: asciify?
             name: payload.name,
             email: payload.email,
         })
@@ -122,7 +128,8 @@ gravatar: {:x}
     crab.pulls("Samasaur1", "samasaur1.github.io")
         .create(format!("Add comment on {}", post_id), branch_name, "main")
         .send().await.unwrap();
-    Redirect::to(payload.redirect.as_str())
+    let asciify = Regex::new(r"[^[:ascii:]]").unwrap();
+    Redirect::to(&*asciify.replace_all(payload.redirect.as_str(), ""))
 }
 
 // the input to our `create_user` handler
