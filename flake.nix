@@ -9,7 +9,7 @@
     in {
       packages = forAllSystems (pkgs: { default = pkgs.callPackage ./. { }; });
 
-      modules.default = import ./module.nix;
+      nixosModules.default = import ./module.nix;
 
       formatter = nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed
         (system: nixpkgs.legacyPackages.${system}.nixfmt);
