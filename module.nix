@@ -11,6 +11,12 @@ with lib;
         example = 46264;
         description = "The port to listen on";
       };
+      openFirewall = mkOption {
+        type = types.bool;
+        default = true;
+        example = false;
+        description = "Whether to automatically open the port the server runs on";
+      };
     };
   };
 
@@ -43,6 +49,6 @@ with lib;
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
     };
-    networking.firewall.allowedTCPPorts = [ cfg.port ];
+    networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [ cfg.port ];
   };
 }
