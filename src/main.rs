@@ -29,6 +29,8 @@ async fn main() {
     // // initialize tracing
     // tracing_subscriber::fmt::init();
 
+    let port = Args::parse().port;
+
     let token = match std::env::var("GITHUB_TOKEN") {
         Ok(token_string) => token_string,
         Err(_) => {
@@ -50,8 +52,6 @@ async fn main() {
     // build our application with a route
     let app = Router::new()
         .route("/", post(|x| create_comment(x, crab)));
-
-    let port = Args::parse().port;
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
