@@ -8,6 +8,7 @@ use std::process::exit;
 use std::str::FromStr;
 use axum::handler::Handler;
 use axum::response::Redirect;
+use clap::{Arg, Parser};
 use octocrab::models::repos::{CommitAuthor, Object};
 use octocrab::Octocrab;
 use octocrab::params::repos::Reference;
@@ -16,6 +17,12 @@ use time::macros::{format_description, offset};
 use time::{format_description, OffsetDateTime, UtcOffset};
 use time::format_description::well_known;
 use uuid::Uuid;
+
+#[derive(Parser, Debug)]
+struct Args {
+    #[arg(short, long, default_value_t = 10113)]
+    port: u16
+}
 
 #[tokio::main]
 async fn main() {
@@ -44,21 +51,7 @@ async fn main() {
     let app = Router::new()
         .route("/", post(|x| create_comment(x, crab)));
 
-    let port = match std::env::var("JKC_PORT") {
-        Ok(p) => {
-            match u16::from_str(p.as_str()) {
-                Ok(port) => port,
-                Err(_) => {
-                    eprintln!("Cannot convert value of $JKC_PORT ({p}) to u16");
-                    exit(1);
-                }
-            }
-        }
-        Err(_) => {
-            println!("No value for $JKC_PORT; using 10113");
-            10113u16
-        }
-    };
+    let port = Args::parse().port;
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
