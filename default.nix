@@ -1,15 +1,15 @@
 { lib, rustPlatform, stdenv, darwin }:
 
-let cargoToml = (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package;
+let
+  cargoToml = (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package;
 
 in rustPlatform.buildRustPackage rec {
-  pname = (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package.name;
-  version =
-    (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package.version;
+  pname = cargoToml.name;
+  version = cargoToml.version;
 
   src = ./.;
 
-  cargoHash = "sha256-QslJtSm47n19J/b++SRBuG37MolkAX4vMQmIdd2tNzY=";
+  cargoHash = "sha256-uUbz1Ay4Pvg7IpxB6OJ7A3cOnjTUW5tCSrt57nQTfZY=";
 
   buildInputs = [ ] ++ lib.optionals stdenv.isDarwin [
     darwin.apple_sdk.frameworks.IOKit
