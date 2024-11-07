@@ -11,11 +11,6 @@ in rustPlatform.buildRustPackage rec {
 
   cargoHash = "sha256-yn0mjAsyxwot9nXILS5IKBgsSwggumiz/8liROgrXQI=";
 
-  buildInputs = [ ] ++ lib.optionals stdenv.isDarwin [
-    darwin.apple_sdk.frameworks.IOKit
-    darwin.apple_sdk.frameworks.Security
-  ];
-
   env = { VERGEN_IDEMPOTENT = true; };
 
   meta = with lib; {

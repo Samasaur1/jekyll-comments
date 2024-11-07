@@ -1,6 +1,8 @@
 {
   description = "The server-side software for Remote Text";
 
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs";
+
   outputs = { nixpkgs, ... }:
     let
       forAllSystems = gen:
