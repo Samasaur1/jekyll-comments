@@ -51,7 +51,9 @@ async fn main() {
 
     // build our application with a route
     let app = Router::new()
-        .route("/", post(|x| create_comment(x, crab)));
+        .route("/comment", post(|x| create_comment(x, crab)))
+        .route("/status", get(return_ok))
+    ;
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
@@ -62,6 +64,10 @@ async fn main() {
         .serve(app.into_make_service())
         .await
         .unwrap();
+}
+
+async fn return_ok() -> &'static str {
+    "The comments service is functioning normally\n"
 }
 
 async fn create_comment(Form(payload): Form<Comment>, crab: Octocrab) -> Redirect {
