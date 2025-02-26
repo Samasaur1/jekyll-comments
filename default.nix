@@ -10,7 +10,7 @@ in rustPlatform.buildRustPackage rec {
   src = ./.;
 
   useFetchCargoVendor = true;
-  cargoHash = "sha256-HvYmDsE+tN9A97rkQlBvJjAPbU9dgBP9yVdU5IRGlzk=";
+  cargoHash = "sha256-x88Gf/a6WxB3GvaMcwo33MecQuD/x0ES6k3mUY1+pDg=";
 
   env = { VERGEN_IDEMPOTENT = true; };
 
