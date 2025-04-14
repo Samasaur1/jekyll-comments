@@ -1,5 +1,5 @@
 {
-  description = "The server-side software for Remote Text";
+  description = "add comments to a static Jekyll site";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs";
 
