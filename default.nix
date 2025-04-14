@@ -14,10 +14,8 @@ in rustPlatform.buildRustPackage rec {
 
   env = { VERGEN_IDEMPOTENT = true; };
 
-  meta = with lib; {
-    description = "The server-side software for Remote Text";
-    homepage = "https://github.com/Remote-Text/remote-text-server";
-    license = with licenses; [ ];
-    maintainers = with maintainers; [ ];
+  meta = {
+    description = "add comments to a static Jekyll site";
+    homepage = "https://github.com/Samasaur1/jekyll-comments";
   };
 }
